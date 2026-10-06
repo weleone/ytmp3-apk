@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="?attr/appBackground" android:padding="20dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp">
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="YT" android:textSize="28sp" android:textStyle="bold"
+                    android:textColor="#FF3B30" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="MP3" android:textSize="28sp" android:textStyle="bold"
+                    android:textColor="?attr/appTextPrimary" />
+            </LinearLayout>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="YouTube / Instagram 视频转 MP3 / MP4 · 自建私有服务"
+                android:textSize="14sp" android:textColor="?attr/appTextSecondary"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:layout_marginBottom="12dp">
+            <TextView android:id="@+id/tv_current"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:textColor="?attr/appTextSecondary" android:textSize="14sp"
+                android:text="未选择服务器" android:layout_marginBottom="8dp" />
+            <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="horizontal">
+                <Button android:id="@+id/btn_servers"
+                    android:backgroundTint="?attr/appButtonTintRed" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="@string/btn_manage_servers"
+                    android:textSize="14sp" android:layout_marginEnd="3dp"
+                    android:minHeight="0dp" android:minWidth="0dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"
+                    app:cornerRadius="6dp" />
+                <Button android:id="@+id/btn_ping"
+                    android:backgroundTint="?attr/appButtonTintBlue" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="检测连接"
+                    android:textSize="14sp"
+                    android:layout_marginStart="3dp" android:layout_marginEnd="3dp"
+                    android:minHeight="0dp" android:minWidth="0dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"
+                    app:cornerRadius="6dp" />
+                <Button android:id="@+id/btn_docker" android:layout_width="0dp"
+                    android:layout_height="wrap_content" android:layout_weight="1"
+                    android:text="服务器搭建"
+                    android:textSize="14sp" android:backgroundTint="?attr/appButtonTintGreen"
+                    android:layout_marginStart="3dp"
+                    android:minHeight="0dp" android:minWidth="0dp"
+                    android:paddingTop="8dp" android:paddingBottom="8dp"
+                    app:cornerRadius="6dp" />
+            </LinearLayout>
+        </LinearLayout>
+        <EditText android:id="@+id/et_url"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="@string/hint_url" android:textColor="?attr/appTextPrimary"
+            android:textColorHint="?attr/appTextHint" android:inputType="textUri"
+            android:padding="12dp" android:layout_marginBottom="12dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+                <RadioButton android:id="@+id/rb_mp3" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="MP3（音频）" android:textSize="14sp"
+                    android:checked="true" android:textColor="?attr/appTextPrimary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="码率" android:textColor="?attr/appTextSecondary" android:textSize="12sp"
+                    android:layout_marginTop="8dp" android:layout_marginBottom="4dp" />
+                <Spinner android:id="@+id/sp_bitrate" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical"
+                android:layout_marginStart="8dp">
+                <RadioButton android:id="@+id/rb_mp4" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="MP4（视频）" android:textSize="14sp"
+                    android:textColor="?attr/appTextPrimary" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="分辨率" android:textColor="?attr/appTextSecondary" android:textSize="12sp"
+                    android:layout_marginTop="8dp" android:layout_marginBottom="4dp" />
+                <Spinner android:id="@+id/sp_resolution" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+        <Button android:id="@+id/btn_go"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="发送到服务器" android:backgroundTint="?attr/appButtonTintPurple"
+            android:textColor="#FFFFFF" android:layout_marginBottom="16dp" />
+        <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:visibility="gone" android:max="100" />
+        <TextView android:id="@+id/tv_status"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="?attr/appTextSecondary" android:textSize="13sp" android:layout_marginTop="8dp" />
+        <Button android:id="@+id/btn_save"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="保存到手机" android:visibility="gone"
+            android:backgroundTint="?attr/appButtonTintGreen" android:layout_marginTop="12dp" />
+                <TextView android:id="@+id/tv_last_path"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="文件位置：-" android:textColor="?attr/appTextHint" android:textSize="12sp"
+            android:layout_marginBottom="4dp" android:padding="4dp" />
+<TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="已下载文件（左滑删除）" android:textSize="15sp" android:textStyle="bold"
+            android:textColor="?attr/appTextPrimary" android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+        <TextView android:id="@+id/tv_files_empty"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="暂无下载文件" android:textColor="?attr/appTextHint" android:textSize="13sp"
+            android:padding="4dp" android:visibility="gone" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rv_files"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YTMP3</string>
+    <string name="tab_local">本地下载</string>
+    <string name="tab_server">服务器</string>
+    <string name="hint_url">粘贴 YouTube / Instagram 链接</string>
+    <string name="btn_download">开始下载</string>
+    <string name="btn_manage_servers">管理服务器</string>
+    <string name="title_servers">服务器管理</string>
+    <string name="add_server">添加服务器</string>
+    <string name="hint_name">名称（如：家里）</string>
+    <string name="hint_server_url">服务器地址（如：http://192.168.0.2:8090）</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="delete">删除</string>
+    <string name="test_ok">连接正常</string>
+    <string name="test_fail">连接失败</string>
+</resources>

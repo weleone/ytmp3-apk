@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 默认深色风格（当前） -->
+    <style name="Theme.YTMP3" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#FF3B30</item>
+        <item name="android:statusBarColor">#0E0E11</item>
+        <item name="android:navigationBarColor">#0E0E11</item>
+        <item name="appBackground">#0E0E11</item>
+        <item name="appSurface">#16161B</item>
+        <item name="appTextPrimary">#ECECEE</item>
+        <item name="appTextSecondary">#8B8B95</item>
+        <item name="appTextHint">#77777F</item>
+        <item name="appFooterText">#55555E</item>
+        <item name="appButtonTintRed">#FF3B30</item>
+        <item name="appButtonTintPurple">#5B5BD6</item>
+        <item name="appButtonTintGreen">#1F9D55</item>
+        <item name="appButtonTintBlue">#2196F3</item>
+    </style>
+
+    <!-- 新版安卓配色（Material You 浅色） -->
+    <style name="Theme.YTMP3.MaterialYou" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">#0B57D3</item>
+        <item name="android:statusBarColor">#FDF8FD</item>
+        <item name="android:navigationBarColor">#FDF8FD</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="appBackground">#FDF8FD</item>
+        <item name="appSurface">#FFFFFF</item>
+        <item name="appTextPrimary">#1D1B20</item>
+        <item name="appTextSecondary">#49454F</item>
+        <item name="appTextHint">#79747E</item>
+        <item name="appFooterText">#938F99</item>
+        <item name="appButtonTintRed">#5F6368</item>
+        <item name="appButtonTintPurple">#5F6368</item>
+        <item name="appButtonTintGreen">#5F6368</item>
+        <item name="appButtonTintBlue">#5F6368</item>
+    </style>
+</resources>
