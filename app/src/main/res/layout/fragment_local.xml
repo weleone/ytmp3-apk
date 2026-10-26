@@ -56,7 +56,22 @@
         <Button android:id="@+id/btn_go"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:text="@string/btn_download" android:backgroundTint="?attr/appButtonTintRed"
-            android:textColor="#FFFFFF" android:layout_marginBottom="16dp" />
+            android:textColor="#FFFFFF" android:layout_marginBottom="12dp" />
+        <TextView android:id="@+id/tv_ytdlp_version"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="本机 yt-dlp：-" android:textColor="?attr/appTextSecondary"
+            android:textSize="13sp" android:layout_marginBottom="8dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginBottom="16dp">
+            <Button android:id="@+id/btn_check_ytdlp"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="检查 yt-dlp 更新"
+                android:layout_marginEnd="8dp" />
+            <Button android:id="@+id/btn_update_ytdlp"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="更新 yt-dlp"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
         <ProgressBar android:id="@+id/progress" style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent" android:layout_height="wrap_content"
             android:visibility="gone" android:max="100" />

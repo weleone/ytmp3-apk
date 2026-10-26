@@ -36,6 +36,11 @@ public class LocalFragment extends Fragment {
     private ProgressBar progress;
     private TextView tvStatus;
     private Button btnGo;
+    // 本机 yt-dlp 更新: APK 内置版无法运行时 pip 升级, 靠 wheel 覆盖
+    private TextView tvYtdlpVersion;
+    private Button btnCheckYtdlp;
+    private Button btnUpdateYtdlp;
+    private String pendingWheelUrl;
     private RecyclerView rvFiles;
     private TextView tvFilesEmpty;
     private TextView tvLastPath;
@@ -51,6 +56,13 @@ public class LocalFragment extends Fragment {
         progress = v.findViewById(R.id.progress);
         tvStatus = v.findViewById(R.id.tv_status);
         btnGo = v.findViewById(R.id.btn_go);
+        tvYtdlpVersion = v.findViewById(R.id.tv_ytdlp_version);
+        btnCheckYtdlp = v.findViewById(R.id.btn_check_ytdlp);
+        btnUpdateYtdlp = v.findViewById(R.id.btn_update_ytdlp);
+        btnUpdateYtdlp.setEnabled(false);
+        btnCheckYtdlp.setOnClickListener(view -> checkYtdlpUpdate());
+        btnUpdateYtdlp.setOnClickListener(view -> updateYtdlp());
+        showYtdlpVersion();
         rvFiles = v.findViewById(R.id.rv_files);
         tvFilesEmpty = v.findViewById(R.id.tv_files_empty);
         tvLastPath = v.findViewById(R.id.tv_last_path);
@@ -110,6 +122,86 @@ public class LocalFragment extends Fragment {
         DownloadListHelper.refresh(getContext(), rvFiles, tvFilesEmpty);
     }
 
+    /** 本机 yt-dlp 覆盖目录: 应用私有目录, 重启后优先于 APK 内置版加载 */
+    private String ytdlpUpdateDir() {
+        return new File(requireContext().getFilesDir(), "ytdlp_update")
+                .getAbsolutePath();
+    }
+
+    private void showYtdlpVersion() {
+        new Thread(() -> {
+            try {
+                String ver = Python.getInstance().getModule("ytdlp_helper")
+                        .callAttr("get_version", ytdlpUpdateDir()).toString();
+                ui(() -> tvYtdlpVersion.setText("本机 yt-dlp：" + ver));
+            } catch (Exception ignored) {
+            }
+        }).start();
+    }
+
+    private void checkYtdlpUpdate() {
+        btnCheckYtdlp.setEnabled(false);
+        ui(() -> tvYtdlpVersion.setText("本机 yt-dlp：检查中…"));
+        new Thread(() -> {
+            try {
+                String raw = Python.getInstance().getModule("ytdlp_helper")
+                        .callAttr("check_update", ytdlpUpdateDir()).toString();
+                String[] p = raw.split("\\|");
+                if (p.length < 3) throw new RuntimeException("返回异常：" + raw);
+                boolean available = "1".equals(p[2]);
+                pendingWheelUrl = available && p.length > 3 ? p[3] : null;
+                String text = "本机 yt-dlp：当前 " + p[0] + "，最新 " + p[1]
+                        + (available ? "，有更新" : "，已是最新");
+                ui(() -> {
+                    tvYtdlpVersion.setText(text);
+                    btnUpdateYtdlp.setEnabled(available);
+                    btnCheckYtdlp.setEnabled(true);
+                });
+            } catch (Exception e) {
+                String msg = String.valueOf(e.getMessage());
+                if (msg.length() > 200) msg = msg.substring(0, 200);
+                String fmsg = msg;
+                ui(() -> {
+                    tvYtdlpVersion.setText("本机 yt-dlp：检查失败");
+                    toast("检查失败：" + fmsg);
+                    btnCheckYtdlp.setEnabled(true);
+                });
+            }
+        }).start();
+    }
+
+    private void updateYtdlp() {
+        btnUpdateYtdlp.setEnabled(false);
+        btnCheckYtdlp.setEnabled(false);
+        ui(() -> tvYtdlpVersion.setText("本机 yt-dlp：更新中…"));
+        String wheel = pendingWheelUrl != null ? pendingWheelUrl : "";
+        new Thread(() -> {
+            try {
+                String raw = Python.getInstance().getModule("ytdlp_helper")
+                        .callAttr("update_yt_dlp", ytdlpUpdateDir(), wheel)
+                        .toString();
+                String[] p = raw.split("\\|");
+                String newVer = p.length > 1 ? p[1] : raw;
+                ui(() -> {
+                    tvYtdlpVersion.setText(
+                            "本机 yt-dlp：已更新到 " + newVer + "，重启 App 后生效");
+                    toast("已更新到 " + newVer + "，重启 App 后生效");
+                    btnCheckYtdlp.setEnabled(true);
+                });
+            } catch (Exception e) {
+                String msg = String.valueOf(e.getMessage());
+                if (msg.length() > 300) msg = msg.substring(0, 300);
+                String fmsg = msg;
+                ui(() -> {
+                    tvYtdlpVersion.setText("本机 yt-dlp：更新失败");
+                    toast("更新失败：" + fmsg);
+                    btnCheckYtdlp.setEnabled(true);
+                    btnUpdateYtdlp.setEnabled(true);
+                });
+            }
+        }).start();
+    }
+
     private void startLocalDownload(String url, String fmt, String bitrate, String resolution) {
         btnGo.setEnabled(false);
         progress.setVisibility(View.VISIBLE);
@@ -118,7 +210,7 @@ public class LocalFragment extends Fragment {
             try {
                 Python py = Python.getInstance();
                 String title = py.getModule("ytdlp_helper")
-                        .callAttr("get_title", url).toString();
+                        .callAttr("get_title", url, ytdlpUpdateDir()).toString();
                 String safe = Pattern.compile("[\\\\/:*?\"<>|]")
                         .matcher(title).replaceAll("_");
                 if (safe.length() > 60) safe = safe.substring(0, 60);
@@ -130,7 +222,8 @@ public class LocalFragment extends Fragment {
                 setStatus("下载中…", 20);
                 String raw = py.getModule("ytdlp_helper")
                         .callAttr("download", url, fmt,
-                                outDir.getAbsolutePath(), resolution).toString();
+                                outDir.getAbsolutePath(), resolution,
+                                ytdlpUpdateDir()).toString();
 
                 // 文件名带上码率/分辨率：title_320K.mp3 / title_1080p.mp4
                 String quality = "mp3".equals(fmt) ? bitrate : resolution + "p";
