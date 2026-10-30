@@ -15,7 +15,7 @@ android {
         versionName '1.0.1'
 
         python {
-            version "3.10"
+            version "3.11"
             pip {
                 install "yt-dlp"
             }
