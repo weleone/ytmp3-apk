@@ -1,4 +1,4 @@
-# YTMP3 Android
+# YTMP3 Android v1.0.1
 
 YouTube / Instagram 视频转 MP3 / MP4 的安卓客户端，搭配自建私有服务端使用。
 
@@ -8,6 +8,7 @@ YouTube / Instagram 视频转 MP3 / MP4 的安卓客户端，搭配自建私有�
 - 手机端直接下载、转码（yt-dlp + FFmpeg），无需服务器
 - MP3（128K / 192K / 256K / 320K）/ MP4（360p ~ 2160p）
 - 下载完成后自动保存到 `Download/YTMP3`，列表实时显示文件大小
+- 支持本地更新yt-dlp
 
 **服务器模式**
 - 添加、管理多个下载服务器，一键检测连通性（`GET /api/health`）
