@@ -1,4 +1,4 @@
-# YTMP3 Android v1.0.1
+# YTMP3 Android v1.0.2
 
 YouTube / Instagram 视频转 MP3 / MP4 的安卓客户端，搭配自建私有服务端使用。
 
