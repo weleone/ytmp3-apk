@@ -6,6 +6,12 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.2'
-        classpath 'com.chaquo.python:gradle:15.0.1'
+        // 16KB fix: Chaquopy 15.0.1 predates all 16KB work. 17.2.0 (2026-10-26,
+        // Maven Central latest, verified) supports 16KB devices itself and
+        // AGP 7.3-9.5, so AGP 8.5.2 can stay. Its 16.1.0 release only linked
+        // the _chaquopy OpenSSL/SQLite stubs in 16KB mode; 17.0.0 is the
+        // first release where Chaquopy itself supports 16KB devices, and it
+        // recommends Python 3.13+ for the wheels.
+        classpath 'com.chaquo.python:gradle:17.2.0'
     }
 }

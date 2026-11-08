@@ -5,29 +5,56 @@ plugins {
 
 android {
     namespace 'com.weleone.ytmp3'
-    compileSdk 34
+    // 16KB fix: FFmpegKit 8.1.x targets SDK 35, and Google Play requires
+    // 16KB support for apps targeting Android 15 (API 35)+.
+    compileSdk 35
+    // NDK r28+ aligns shared libraries to 16KB by default
+    // (r27 and lower need -Wl,-z,max-page-size=16384 explicitly).
+    // Verified version string for NDK r28: 28.2.13676358.
+    ndkVersion "28.2.13676358"
 
     defaultConfig {
         applicationId 'com.weleone.ytmp3'
         minSdk 26
-        targetSdk 34
-        versionCode 3
-        versionName '1.0.2'
+        targetSdk 35
+        versionCode 4
+        versionName '1.0.3'
 
         python {
-            version "3.11"
+            // 16KB fix: Chaquopy 17.0.0+ supports 16KB devices, but
+            // recommends Python 3.13+ ("many existing Android wheels will
+            // still fail to load on 16KB devices. For best compatibility
+            // use Python 3.13 or later"). Python 3.12+ is 64-bit only,
+            // so armeabi-v7a must go (see ndk.abiFilters below).
+            version "3.13"
             pip {
                 install "yt-dlp"
             }
         }
         ndk {
-            abiFilters 'arm64-v8a', 'armeabi-v7a'
+            // 16KB fix: arm64-v8a only. Python 3.13 has no 32-bit ABIs,
+            // and FFmpegKit 8.1.x publishes arm64-v8a + x86_64 only
+            // (no armeabi-v7a). The user's phone (Redmi K60 Pro) is arm64.
+            abiFilters 'arm64-v8a'
         }
     }
 
     buildTypes {
         release {
             minifyEnabled false
+            // This was the "debuggable app" warning: the old workflow
+            // ran assembleDebug, so the published APK was a debug build.
+            // A release build is debuggable=false by default; state it
+            // explicitly so it can never silently regress.
+            debuggable false
+            zipAlignEnabled true
+        }
+    }
+    // 16KB zip alignment: AGP >= 8.5.1 aligns uncompressed native libs
+    // to a 16KB boundary automatically. Keep libs uncompressed.
+    packaging {
+        jniLibs {
+            useLegacyPackaging false
         }
     }
     compileOptions {
@@ -40,7 +67,14 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
-    implementation 'dev.ffmpegkit-maintained:ffmpeg-kit-full:8.1.7'
-    // 8.1.7 的 POM 缺传递依赖声明，手动补上（否则运行时 NoClassDefFoundError 闪退）
+    // 16KB fix: 8.1.7 -> 8.1.9 (Maven Central latest, verified 2026-11-08).
+    // Both 8.1.7 and 8.1.9 AARs downloaded today have every .so
+    // (arm64-v8a + x86_64) with LOAD p_align=16384, but 8.1.9 is the
+    // current LTS line and the one to pin going forward. The unaligned
+    // FFmpeg libs in the phone screenshot came from the pre-16KB
+    // build that shipped in v1.0.2's debug APK.
+    implementation 'dev.ffmpegkit-maintained:ffmpeg-kit-full:8.1.9'
+    // 8.1.x POM still lacks the transitive dependency declaration,
+    // keep the manual addition (otherwise NoClassDefFoundError at runtime).
     implementation 'com.arthenica:smart-exception-java:0.2.1'
 }

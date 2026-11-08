@@ -19,6 +19,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # 16KB fix: Chaquopy buildPython must match the app Python version
+      # (3.13). ubuntu-latest's default python3 is not guaranteed to be 3.13.
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -28,13 +35,35 @@ jobs:
         run: |
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           yes | sdkmanager --licenses > /dev/null
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools" "ndk;28.2.13676358"
 
+      # 16KB fix: the old workflow said "Build release APK" but ran
+      # assembleDebug, which is why v1.0.2 shipped as a debuggable
+      # app-debug.apk. Build the release variant.
       - name: Build release APK
-        run: gradle assembleDebug
+        run: gradle assembleRelease
 
-      - name: Upload APK
+      # 16KB fix: fail the build if the APK is not 16KB zip-aligned.
+      # This is the check from developer.android.com/16kb-page-size.
+      # It checks ZIP alignment only; ELF alignment of the .so files
+      # is checked by scripts/verify-16kb.sh (run it on the artifact).
+      - name: Verify 16KB zip alignment
+        run: |
+          ZIPALIGN=$ANDROID_HOME/build-tools/35.0.0/zipalign
+          $ZIPALIGN -c -P 16 -v 4 app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Upload release APK (unsigned - see signing note below)
         uses: actions/upload-artifact@v4
         with:
-          name: ytmp3-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: ytmp3-apk-release-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+      # --- Signing (not enabled yet) ---
+      # The release APK above is UNSIGNED and cannot be installed as-is.
+      # To publish v1.0.3, add these repository secrets and uncomment a
+      # signing step (apksigner with a keystore), or sign locally:
+      #   ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD,
+      #   ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+      # The user must also uninstall the old debug APK first: a release
+      # APK signed with a different key cannot update-install over the
+      # debug APK (different signature), and its data will not carry over.
